@@ -683,7 +683,14 @@ class WebSocketService {
       payload: { postId, userId }
     })
 
-    // Fallback: HTTP
+    // Phone-only: avoid HTTP fallback because it may return 403 on mobile
+    // (WS path is the one used for deletion sync in this app).
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    if (isMobileDevice) {
+      return true
+    }
+
+    // Desktop/other: keep HTTP fallback
     try {
       const response = await fetch(`${HTTP_URL}/api/posts/${postId}`, {
         method: 'DELETE',
@@ -702,6 +709,7 @@ class WebSocketService {
 
     return false
   }
+
 
   async deleteAllUserPosts(userId) {
     try {
