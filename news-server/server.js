@@ -141,6 +141,16 @@ app.options('*', cors()) // Enable preflight for all routes
 // ============================================
 // Health Check / Ping Endpoint (Critical for Mobile)
 // ============================================
+// NOTE:
+// Phone browsers rely heavily on CORS preflight.
+// Some environments mishandle HEAD/OPTIONS for this route, causing "Failed to fetch".
+// Fix is strictly confined to /api/ping behavior + explicit preflight handling.
+
+app.options('/api/ping', (req, res) => {
+  // CORS middleware will add headers, but explicitly ending avoids timeouts.
+  res.sendStatus(204)
+})
+
 app.get('/api/ping', (req, res) => {
   res.status(200).json({
     success: true,
@@ -151,8 +161,10 @@ app.get('/api/ping', (req, res) => {
 })
 
 app.head('/api/ping', (req, res) => {
+  // Must return a successful response for fetch(..., { method: 'HEAD' })
   res.status(200).end()
 })
+
 
 app.use(express.json({ limit: '10mb' }))
 
