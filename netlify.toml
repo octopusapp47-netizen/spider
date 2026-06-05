@@ -1,0 +1,15 @@
+# Netlify config to ensure AdSense can fetch /ads.txt as a static file
+
+[[redirects]]
+from = "/ads.txt"
+to = "/ads.txt"
+status = 200
+force = true
+
+# Keep SPA routing for everything else
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+force = true
+
